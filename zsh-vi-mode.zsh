@@ -686,6 +686,9 @@ function zvm_backward_kill_region() {
   CUTBUFFER=${BUFFER:$bpos:$((epos-bpos))}
   BUFFER="${BUFFER:0:$bpos}${BUFFER:$epos}"
   CURSOR=$bpos
+  if [[ -v DISPLAY ]]; then
+    echo -en "${CUTBUFFER}" | xsel -b -i
+  fi
 }
 
 # Remove all characters between the cursor position and the
@@ -708,6 +711,9 @@ function zvm_kill_line() {
   CUTBUFFER=${BUFFER:$bpos:$((epos-bpos))}$'\n'
   BUFFER="${BUFFER:0:$bpos}${BUFFER:$epos}"
   CURSOR=$bpos
+  if [[ -v DISPLAY ]]; then
+    echo -en "${CUTBUFFER}" | xsel -b -i
+  fi
 }
 
 # Remove all characters of the whole line.
@@ -723,6 +729,9 @@ function zvm_kill_whole_line() {
 
   BUFFER="${BUFFER:0:$bpos}${BUFFER:$epos}"
   CURSOR=$cpos
+  if [[ -v DISPLAY ]]; then
+    echo -en "${CUTBUFFER}" | xsel -b -i
+  fi
 }
 
 # Exchange the point and mark
@@ -1041,6 +1050,9 @@ function zvm_yank() {
     CUTBUFFER=${CUTBUFFER}$'\n'
   fi
   CURSOR=$bpos MARK=$epos
+  if [[ -v DISPLAY ]]; then
+    echo -en "${CUTBUFFER}" | xsel -b -i
+  fi
 }
 
 # Up case of the visual selection
@@ -1086,6 +1098,9 @@ function zvm_vi_yank() {
 # Put cutbuffer after the cursor
 function zvm_vi_put_after() {
   local head= foot=
+  if [[ -v DISPLAY ]]; then
+    CUTBUFFER="$(xsel -b -o)"
+  fi
   local content=${CUTBUFFER}
   local offset=1
 
@@ -1138,6 +1153,9 @@ function zvm_vi_put_after() {
 # Put cutbuffer before the cursor
 function zvm_vi_put_before() {
   local head= foot=
+  if [[ -v DISPLAY ]]; then
+    CUTBUFFER="$(xsel -b -o)"
+  fi
   local content=${CUTBUFFER}
 
   if [[ ${content: -1} == $'\n' ]]; then
@@ -1201,6 +1219,9 @@ function zvm_replace_selection() {
 
   BUFFER="${BUFFER:0:$bpos}${cutbuf}${BUFFER:$epos}"
   CURSOR=$cpos
+  if [[ -v DISPLAY ]]; then
+    echo -en "${CUTBUFFER}" | xsel -b -i
+  fi
 }
 
 # Replace characters of the visual selection
@@ -1229,6 +1250,9 @@ function zvm_vi_change() {
 
   BUFFER="${BUFFER:0:$bpos}${BUFFER:$epos}"
   CURSOR=$bpos
+  if [[ -v DISPLAY ]]; then
+    echo -en "${CUTBUFFER}" | xsel -b -i
+  fi
 
   # Return when it's repeating mode
   $ZVM_REPEAT_MODE && return
@@ -1271,6 +1295,9 @@ function zvm_vi_change_eol() {
 
   CUTBUFFER=${BUFFER:$bpos:$((epos-bpos))}
   BUFFER="${BUFFER:0:$bpos}${BUFFER:$epos}"
+  if [[ -v DISPLAY ]]; then
+    echo -en "${CUTBUFFER}" | xsel -b -i
+  fi
 
   zvm_reset_repeat_commands $ZVM_MODE c 0 $#CUTBUFFER
   zvm_select_vi_mode $ZVM_MODE_INSERT
@@ -2133,6 +2160,9 @@ function zvm_change_surround_text_object() {
     ((epos++))
   fi
   CUTBUFFER=${BUFFER:$bpos:$(($epos-$bpos))}
+  if [[ -v DISPLAY ]]; then
+    echo -en "${CUTBUFFER}" | xsel -b -i
+  fi
   case ${action:0:1} in
     c)
       BUFFER="${BUFFER:0:$bpos}${BUFFER:$epos}"
